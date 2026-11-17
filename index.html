@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ร้านชำ Suno prom - DNA Song Studio (Upgraded)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap">
+
+<!-- PWA & Mobile App Settings -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#070d1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DNA Song">
+
+<style>
+:root{--bg:#070d1a;--card:#0c1426;--in:#050a14;--ink:#e8eef9;--mute:#8696b3;--line:#1e3a8a;--sky:#38bdf8;--on:#06121f;--yel:#fbbf24;--red:#f87171;--mono:ui-monospace,Menlo,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding-top:env(safe-area-inset-top,0)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Kanit,Sarabun,system-ui,sans-serif;padding:12px 12px calc(40px + env(safe-area-inset-bottom,0));max-width:620px;margin-inline:auto}
+h1,h2{font-weight:600;margin:0}
+.hero{background:var(--sky);color:var(--on);border:2px solid #0b6fb3;border-radius:16px;padding:12px 14px 18px;text-align:center;margin-bottom:12px}
+.hero .top{display:flex;justify-content:flex-end;gap:8px}
+.pill{font-size:13px;padding:6px 12px;border-radius:8px;border:0}
+.pill.yel{background:var(--yel);color:#1a1200}.pill.blu{background:#0b7bb8;color:#fff}
+.logo{width:116px;height:116px;border-radius:22px;border:3px solid #0b6fb3;background:var(--sky);object-fit:cover;display:block;margin:6px auto 12px}
+.hero h1{font-size:25px;font-weight:700;line-height:1.2}.hero small{display:block;font-size:13px;opacity:.8}
+.qb{display:inline-block;margin-top:8px;font-size:12px;font-weight:500;background:var(--on);color:#fff;border-radius:99px;padding:2px 12px}.qb.zero{background:var(--red);color:#2a0606}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-size:17px;margin-bottom:10px}
+label,.lab{display:block;font-size:14px;color:var(--mute);margin:12px 0 6px}
+.sp{display:flex;justify-content:space-between;align-items:center;gap:8px}.sp .lab,.sp label{margin:12px 0 6px}
+.sp b{font-size:13px;color:var(--ink);font-weight:600}.sp b.warn{color:var(--red)}
+input,select,textarea{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--in);border:1px solid var(--line);border-radius:8px;padding:10px 11px}
+input::placeholder,textarea::placeholder{color:#5d6e8c}
+textarea{resize:vertical;min-height:120px}
+.mono{font:13px/1.5 var(--mono)}
+:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+button{font:500 14px Kanit,sans-serif;border:1px solid var(--line);border-radius:8px;padding:9px 14px;background:var(--in);color:var(--ink);cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.go{background:var(--sky);color:var(--on);border:0;width:100%;padding:14px;font-size:17px;font-weight:600;border-radius:12px;margin-top:14px}
+.row{display:flex;gap:8px}.row>*{flex:1 1 0;min-width:0}.row>button{flex:0 0 auto}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.tabs button{padding:9px 4px;font-size:13px;font-weight:500}
+.tabs button.on,.chip.on,.cats button.on{background:var(--sky);color:var(--on);border-color:var(--sky)}
+.chips,.cats,.qk,.selbox{display:flex;flex-wrap:wrap;gap:6px}
+.chip,.cats button,.qk button{border-radius:99px;padding:4px 11px;font-size:12.5px;font-weight:400}
+.qk{margin:8px 0 10px}.qk button{padding:4px 10px}
+.rnd{background:none;border:0;color:var(--mute);font-size:12.5px;padding:0}
+.cats{margin:8px 0}
+.gbox{border:1px solid var(--line);border-radius:8px;background:var(--in);padding:8px;max-height:176px;overflow-y:auto}
+.selbox{min-height:42px;align-items:center;border:1px solid var(--line);border-radius:8px;background:var(--in);padding:6px 9px;font-size:13px;color:var(--mute)}
+.selbox button{background:var(--sky);color:var(--on);border:0;border-radius:99px;padding:3px 10px;font-size:12.5px}
+.cnt{font:12px var(--mono);color:var(--mute)}.cnt.bad{color:var(--red)}
+.hint{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:11.5px;color:var(--mute)}
+.err{color:var(--red);font-size:14px;margin-top:10px}
+.note{font-size:13px;color:var(--mute);margin:0}
+.price{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.price b{background:var(--sky);color:var(--on);padding:2px 12px;border-radius:99px;font-size:13px;font-weight:600}
+.hist{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+.hist div{min-width:0;cursor:pointer}.hist b{display:block;font-weight:500}.hist span{font:12px var(--mono);color:var(--mute);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tip{border-left:4px solid var(--yel)}
+@media(prefers-reduced-motion:no-preference){.card{animation:in .25s}@keyframes in{from{opacity:.4}}}
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="top"><button class="pill yel" id="instb">📱 ติดตั้งแอป</button><button class="pill blu" id="hb">📚 คลังเพลง</button></div>
+<img class="logo" src="icons/icon-192.png" alt="DNA Song Studio Logo" width="116" height="116">
+<h1>ร้านชำ Suno prom</h1><small>DNA Song Studio (Upgraded Engine)</small><span class="qb" id="qb" hidden></span>
+</header>
+
+<section class="card"><p class="note">✨ อัปเกรดระบบ Prompt ใหม่: คุมโหมด Preserve 100%, กรองพรีเซ็ตไม่ให้ชนกัน, ควบคุมความยาวมาตรฐาน/Extended และระบบ Clamp ตัดคำอัตโนมัติ พร้อมรองรับติดตั้ง PWA</p></section>
+
+<section class="card" id="inst" hidden><p class="note" id="insth"></p></section>
+
+<section class="card" id="acc" hidden>
+<h2>🔑 รหัสเข้าร้าน</h2>
+<input id="acode" type="password" class="mono" placeholder="ใส่รหัสที่เจ้าของร้านให้ไว้" autocomplete="off">
+<p class="note" style="margin-top:8px">ใส่แล้วกดสั่งเพลงอีกครั้ง รหัสจะถูกจำไว้ในเครื่องนี้</p>
+</section>
+
+<section class="card">
+<h2>📖 ถอด DNA จากเพลงอ้างอิง</h2>
+<div class="row"><input id="ref" placeholder="ชื่อเพลง (และศิลปิน ถ้ามี เช่น Shape of You - Ed Sheeran)"><button id="dnab">ถอด DNA</button></div>
+<div id="dnaout"></div>
+</section>
+
+<section class="card">
+<h2>สั่งเพลง</h2>
+<div class="tabs" id="tabs"></div>
+<div class="sp"><label for="idea" id="ideal">ไอเดียเพลง</label><button class="rnd" id="rnd">💡 สุ่มไอเดีย</button></div>
+<div class="qk" id="quick"></div>
+<textarea id="idea" maxlength="5000"></textarea>
+<div class="hint"><span id="chint">ประมาณการความยาวเนื้อร้อง / ไอเดียสำหรับ Suno AI</span><span id="cc">0 / 5,000 ตัวอักษร</span></div>
+
+<div class="sp"><span class="lab">แนวเพลง (เลือกสูงสุด 3 ตัวเลือก)</span><b id="selc">เลือกแล้ว 0/3</b></div>
+<div class="selbox" id="selbox"></div>
+<input id="gs" placeholder="ค้นหาแนว เช่น funk, rock, thai, r&b..." style="margin-top:8px">
+<div class="cats" id="cats"></div>
+<div class="gbox"><div class="chips" id="chips"></div></div>
+<div class="row" style="margin-top:8px"><input id="cg" placeholder="หรือพิมพ์แนวเอง (เช่น synthwave 80s)"><button id="cgb">เพิ่ม</button></div>
+
+<div class="row" style="margin-top:4px">
+<div><label for="vocal">เสียงร้อง</label><select id="vocal"></select></div>
+<div><label for="lang">ภาษาเนื้อร้อง</label><select id="lang"><option value="Thai (ภาษาไทย)">ไทย</option><option value="English">English</option><option value="Thai + English Mix">ไทย + อังกฤษ</option></select></div>
+<div><label for="dur">ความยาว</label><select id="dur"><option value="Standard (~2-3 mins)">Standard 2-3 นาที</option><option value="Extended (~4-5 mins)">Extended 4-5 นาที</option></select></div>
+</div>
+<button class="go" id="go">✨ ทำเพลงเลย</button>
+<div class="err" id="err" role="alert"></div>
+</section>
+
+<div id="out"></div>
+
+<section class="card" id="hbox" hidden>
+<h2>คลังเพลงที่เก็บไว้</h2><div id="hl"></div>
+</section>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch{return d}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
+
+
+
+function clampPackage(pkg) {
+  const cut = (s, max) => {
+    if (typeof s !== 'string' || s.length <= max) return s || '';
+    const sliced = s.slice(0, max);
+    const lastComma = sliced.lastIndexOf(',');
+    return (lastComma > max * 0.6 ? sliced.slice(0, lastComma) : sliced).trim();
+  };
+  return {
+    ...pkg,
+    title: cut(pkg.title, 80),
+    stylePrompt: cut(pkg.stylePrompt, 1000),
+    lyrics: (pkg.lyrics || '').slice(0, 5000)
+  };
+}
+
+const MODES=[['create','สร้างเพลงใหม่','เล่าเรื่อง ความรู้สึก บรรยากาศ เช่น เพลงรักแอบชอบเพื่อนสนิท ฝนตกกลางคืนในกรุงเทพฯ'],['preserve','จัดแท็กเนื้อเดิม','วางเนื้อร้องของคุณ ระบบจะไม่แตะคำร้องเลย เติมแค่แท็กโครงสร้าง'],['optimize','เกลาเนื้อ','วางเนื้อร่าง ระบบจะปรับจังหวะคำ สัมผัส และฮุคให้ร้องง่ายขึ้น'],['instrumental','เพลงบรรเลง','บอกฉาก อารมณ์ หรือการใช้งาน เช่น ดนตรีฉากไล่ล่าในหนังไซไฟ']];
+const CATS=[['all','ทั้งหมด'],['rnb','R&B & Soul'],['retro','Retro & Vintage'],['pop','Pop & Mainstream'],['rock','Rock & Metal'],['edm','Electronic'],['thai','Thai & Isan'],['film','Cinematic'],['lofi','Lofi & Chill'],['indie','Indie & Folk']];
+const G=[
+['rnb','Neo-Soul','Modern R&B, Neo-Soul, Fender Rhodes, warm analog pads, melodic bass'],
+['rnb','Bossa Fusion','Bossa Nova Fusion, nylon guitar, syncopated percussion, warm Rhodes'],
+['rnb','Smooth R&B 90s','90s Smooth R&B, silky electric piano, mellow bass, crisp finger snaps, lush vocal layers'],
+['rnb','Alternative R&B','Alternative R&B, moody sub-bass, reverb-drenched guitar, minimal trap hi-hats, atmospheric pads'],
+['retro','70s Funk Disco','70s Funk, Nu-Disco, slap bass, rhythm guitar, lush strings'],
+['retro','80s City Pop','80s Japanese City Pop, shimmering chorus guitar, gated reverb drums, analog brass'],
+['retro','80s Synthwave','80s Synthwave, arpeggiated analog bass, nostalgic lead synth, gated snare'],
+['retro','Classic Rock 70s','70s Classic Rock, overdriven electric guitars, Hammond organ, live drums, warm tape saturation'],
+['pop','Dance Pop','Modern Dance Pop, euphoric synth lead, sidechained pads, four-on-the-floor beat'],
+['pop','T-Pop','Modern T-Pop, glossy radio production, bright synth hooks, bouncy percussion'],
+['pop','Synth Pop','Synth Pop, analog polysynth, punchy drum machine, warm bass synth'],
+['pop','Dream Pop','Dream Pop, shimmering chorus guitars, ethereal pads, soft hazy reverb, melodic bass'],
+['rock','Nu-Metal','2000s Nu-Metal, downtuned distorted guitars, turntable scratches, hip-hop groove drums'],
+['rock','Indie Rock','Indie Rock, jangly clean guitars, driving bass, live room drums, raw energy'],
+['rock','Alternative Rock','90s Alternative Rock, crunchy distorted guitars, quiet-loud dynamics, driving drums'],
+['rock','Post-Rock','Cinematic Post-Rock, tremolo guitars, slow crescendos, expansive reverb, tight toms'],
+['edm','Orchestral Techno','Orchestral Techno, 132 BPM, driving 4/4 kick, rolling sub-bass, cinematic strings'],
+['edm','Deep House','Deep House, 122 BPM, warm rolling bassline, soft chord stabs, crisp hi-hats'],
+['edm','Future Bass','Future Bass, detuned supersaw chords, chopped vocal textures, punchy trap drums'],
+['edm','Cyberpunk','Dark Cyberpunk Electro, gritty distorted bass, industrial metallic percussion, neon synth leads'],
+['thai','Luk Thung Pop','Modern Luk Thung Pop, bright phin lute, brass section, pop-rock groove'],
+['thai','Mor Lam Funk','Isan Mor Lam Funk, khaen mouth organ, funky bassline, psychedelic surf guitar'],
+['thai','Phleng Phuea Chiwit','Thai Songs for Life (Phleng Phuea Chiwit), acoustic guitar, harmonica, earthy folk rock'],
+['thai','Thai Indie Folk','Thai Indie Folk, fingerpicked acoustic guitar, soft ukulele, brushed drums, intimate room tone'],
+['film','Gospel Choir','Contemporary Gospel, Hammond B3 organ, uplifting piano, call-and-response choir'],
+['film','Epic Cinematic','Epic Cinematic Film Score, brass swells, ostinato strings, hybrid percussive impacts'],
+['lofi','Lofi Hip Hop','Lo-Fi Hip Hop, dusty vinyl crackle, mellow jazz piano, boom-bap drums, tape wobble'],
+['lofi','Jazz Hop','Jazz Hop, upright bass, smoky muted trumpet, relaxed breakbeat, warm Rhodes'],
+['lofi','Chillwave','Chillwave, hazy analog synths, washed-out reverb, soft lo-fi drums, nostalgic tone'],
+['indie','Acoustic Ballad','Acoustic Ballad, fingerpicked acoustic guitar, soft piano, subtle cello, intimate vocal'],
+['indie','Folk Rock','Folk Rock, strummed acoustic guitars, warm electric lead, harmonica, live band feel']];
+const VOC=[['gentle_male','ชายนุ่มนวล','gentle, warm, expressive male lead vocal'],['soulful_female','หญิงโซลฟุล','soulful, airy, emotional female lead vocal'],['gritty_male','ชายดิบเสียงแหบ','gritty, raw, powerful aggressive male rock vocal'],['duet','ดูเอ็ต ชาย-หญิง','intimate duet alternating warm male and smooth female vocals'],['choir','คอรัส','rich multi-layered gospel and soul choir harmonies'],['none','บรรเลง ไม่มีเสียงร้อง','strictly instrumental, no vocals']];
+const QUICK=[['🌞','Upbeat morning vibes'],['🌧️','Melancholic rain theme'],['🔥','Energetic gym motivation'],['☕','Chill lofi cafe'],['💔','Sad breakup ballad']];
+const RANDOM=['เพลงรักแอบชอบเพื่อนสนิท ที่ไม่กล้าบอกสักที','ฝนตกกลางคืนในกรุงเทพฯ นั่งมองรถติดผ่านกระจก','ขับรถเล่นริมทะเลพัทยายามเย็น ลมเย็นๆ','คิดถึงบ้านตอนอยู่ไกลบ้านเป็นครั้งแรก','วันแรกของงานใหม่ ตื่นเต้นแต่มีหวัง','ร้านกาแฟเล็กๆ ตอนเช้า กลิ่นกาแฟกับแสงแดดอ่อน','เพลงปลุกใจก่อนขึ้นเวที','คืนสุดท้ายก่อนย้ายออกจากห้องเก่า'];
+const MAXG=3,MAXI=5000;
+const S={mode:'create',cat:'all',sel:[],custom:[],pkg:null,hist:JSON.parse(store.get('rcsp_hist_v3','[]'))};
+$('#vocal').innerHTML=VOC.map(v=>`<option value="${v[0]}">${v[1]}</option>`).join('');
+
+function drawTabs(){$('#tabs').innerHTML=MODES.map(m=>`<button class="${m[0]===S.mode?'on':''}" data-m="${m[0]}">${m[1]}</button>`).join('');
+ $('#idea').placeholder=MODES.find(m=>m[0]===S.mode)[2];
+ const lyr=/preserve|optimize/.test(S.mode);
+ $('#ideal').textContent=lyr?'เนื้อร้องของคุณ':S.mode==='instrumental'?'ฉากหรืออารมณ์ของเพลง':'ไอเดียเพลง';
+ $('#quick').hidden=lyr;$('#rnd').hidden=lyr;
+ $('#chint').textContent=lyr?'วางเนื้อร้องที่ต้องการให้จัดแท็กหรือเกลา':'ประมาณการความยาวเนื้อร้อง / ไอเดียสำหรับ Suno AI';
+ $('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;$('#vocal').value=S.mode==='instrumental'?'none':($('#vocal').value==='none'?'gentle_male':$('#vocal').value);drawTabs()})}
+function drawQuick(){$('#quick').innerHTML=QUICK.map((q,i)=>`<button data-q="${i}">${q[0]} ${q[1]}</button>`).join('');
+ $('#quick').querySelectorAll('button').forEach(b=>b.onclick=()=>setIdea(QUICK[b.dataset.q][1]))}
+function setIdea(t){$('#idea').value=t;count();$('#idea').focus()}
+function count(){$('#cc').textContent=$('#idea').value.length.toLocaleString('en-US')+' / '+MAXI.toLocaleString('en-US')+' ตัวอักษร'}
+$('#idea').oninput=count;
+$('#rnd').onclick=()=>setIdea(RANDOM[Math.floor(Math.random()*RANDOM.length)]);
+const labelOf=v=>{const g=G.find(x=>x[2]===v);return g?g[1]:(v.length>26?v.slice(0,26)+'...':v)};
+function drawSel(){const sc=$('#selc');sc.classList.remove('warn');sc.textContent='เลือกแล้ว '+S.sel.length+'/'+MAXG;
+ $('#selbox').innerHTML=S.sel.length?S.sel.map((v,i)=>`<button data-x="${i}" aria-label="เอาออก">${esc(labelOf(v))} ✕</button>`).join(''):'ยังไม่ได้เลือกแนวเพลง (แตะเลือกด้านล่างหรือค้นหา)';
+ $('#selbox').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.sel.splice(+b.dataset.x,1);drawChips()})}
+function flashMax(){const c=$('#selc');c.classList.add('warn');c.textContent='เลือกครบ '+MAXG+' แล้ว เอาตัวอื่นออกก่อน';setTimeout(drawSel,1600)}
+function drawChips(){const q=$('#gs').value.toLowerCase().trim();
+ $('#cats').innerHTML=CATS.map(c=>`<button class="${c[0]===S.cat?'on':''}" data-c="${c[0]}">${c[1]}</button>`).join('');
+ $('#cats').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.cat=b.dataset.c;drawChips()});
+ const list=[...S.custom.map(v=>['x',labelOf(v),v]),...G.filter(g=>(S.cat==='all'||g[0]===S.cat)&&(!q||(g[1]+g[2]).toLowerCase().includes(q)))];
+ $('#chips').innerHTML=list.length?list.map((g,i)=>`<button class="chip ${S.sel.includes(g[2])?'on':''}" data-i="${i}">${esc(g[1])}</button>`).join(''):'<span class="note">ไม่พบแนวที่ค้นหา ลองพิมพ์แนวเองด้านล่าง</span>';
+ $('#chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const v=list[b.dataset.i][2];
+  if(S.sel.includes(v))S.sel=S.sel.filter(x=>x!==v);else if(S.sel.length>=MAXG){flashMax();return}else S.sel=[...S.sel,v];drawChips()});
+ drawSel()}
+$('#gs').oninput=drawChips;
+$('#cgb').onclick=()=>{const v=$('#cg').value.trim().slice(0,300);if(!v)return;
+ if(S.sel.length>=MAXG&&!S.sel.includes(v)){flashMax();return}
+ if(!S.custom.includes(v))S.custom.unshift(v);if(!S.sel.includes(v))S.sel.push(v);$('#cg').value='';drawChips()};
+
+function devId(){let d=store.get('rcsp_dev','');if(!/^[A-Za-z0-9-]{16,64}$/.test(d)){d=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,12)+Math.random().toString(36).slice(2,12);store.set('rcsp_dev',d)}return d}
+let Q=null;
+const isOut=()=>!!(Q&&!Q.unlimited&&Q.remaining<=0);
+function setQ(q){Q=q;const b=$('#qb');
+  if(!q||q.unlimited){b.hidden=true;return}
+  b.hidden=false;b.textContent='เหลือ '+q.remaining+(q.limit>0?'/'+q.limit:'')+' ครั้งวันนี้';b.classList.toggle('zero',q.remaining<=0);
+  if(isOut()){$('#go').disabled=true;$('#dnab').disabled=true}}
+function syncBtns(){const o=isOut();$('#go').disabled=o;$('#dnab').disabled=o;if(o&&!$('#err').textContent)$('#err').textContent='โควตาวันนี้หมดแล้ว รีเซ็ตเที่ยงคืนเวลาไทย'}
+async function callApi(kind,payload){
+  let r;
+  try{r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','x-access-code':store.get('rcsp_code',''),'x-device-id':devId()},body:JSON.stringify({kind,...payload})})}
+  catch{throw new Error('ต่ออินเทอร์เน็ตไม่ได้ ลองอีกครั้ง')}
+  let j=null;try{j=await r.json()}catch{}
+  if(j&&j.quota)setQ(j.quota);
+  if(r.status===401){$('#acc').hidden=false;$('#acode').focus();throw new Error((j&&j.message)||'ต้องใส่รหัสเข้าร้านก่อน')}
+  if(!r.ok||!j||!j.ok)throw new Error((j&&j.message)||'ร้านขัดข้อง (รหัส '+r.status+') ลองอีกครั้ง');
+  return kind==='song'?clampPackage(j.data):j.data;
+}
+$('#acode').value=store.get('rcsp_code','');
+$('#acode').onchange=e=>store.set('rcsp_code',e.target.value.trim());
+
+const FIELDS=[['title','ชื่อเพลง',80,0],['stylePrompt','Style prompt (วางช่อง Style)',1000,1],['excludeStyles','Exclude Styles',0,0],['lyrics','เนื้อร้อง + แท็ก (วางช่อง Lyrics)',5000,1]];
+function drawPkg(){const p=S.pkg;if(!p){$('#out').innerHTML='';return}
+ $('#out').innerHTML=`<section class="card"><h2>สรุปจากร้าน</h2><p style="margin:0">${esc(p.brief)}</p></section>`+
+ FIELDS.map(f=>`<section class="card"><div class="price"><b>${f[1]}</b><span><span class="cnt" id="c_${f[0]}"></span> <button data-copy="${f[0]}">คัดลอก</button></span></div>${f[0]==='title'||f[0]==='excludeStyles'?`<input class="mono" data-f="${f[0]}" value="${esc(p[f[0]])}">`:`<textarea class="mono" data-f="${f[0]}" rows="${f[0]==='lyrics'?14:4}">${esc(p[f[0]])}</textarea>`}</div></section>`).join('')+
+ `<section class="card tip"><h2>เคล็ดลับ</h2><p style="margin:0">${esc(p.tip)}</p></section><button class="go" id="save">เก็บเข้าคลังเพลง</button>`;
+ const upd=k=>{const f=FIELDS.find(x=>x[0]===k),el=$(`[data-f="${k}"]`);S.pkg[k]=el.value;const c=$('#c_'+k);if(f[2]){c.textContent=el.value.length+'/'+f[2];c.className='cnt'+(el.value.length>f[2]?' bad':'')}else c.textContent=el.value.length};
+ FIELDS.forEach(f=>{const el=$(`[data-f="${f[0]}"]`);el.oninput=()=>upd(f[0]);upd(f[0])});
+ $('#out').querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copy(S.pkg[b.dataset.copy],b));
+ $('#save').onclick=()=>{S.hist.unshift({id:Date.now(),t:new Date().toLocaleString('th-TH'),p:{...S.pkg}});S.hist=S.hist.slice(0,40);store.set('rcsp_hist_v3',JSON.stringify(S.hist));drawHist();$('#hbox').hidden=false;$('#save').textContent='เก็บแล้ว'}}
+async function copy(t,b){const o=b.textContent;try{await navigator.clipboard.writeText(t)}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch{}a.remove()}b.textContent='คัดลอกแล้ว';setTimeout(()=>b.textContent=o,1200)}
+function drawHist(){$('#hl').innerHTML=S.hist.length?S.hist.map(h=>`<div class="hist"><div data-l="${h.id}"><b>${esc(h.p.title)}</b><span>${esc(h.p.stylePrompt)}</span><span>${esc(h.t)}</span></div><button data-d="${h.id}" aria-label="ลบ">ลบ</button></div>`).join(''):'<p class="note">ยังไม่มีเพลงในคลัง</p>';
+ $('#hl').querySelectorAll('[data-l]').forEach(d=>d.onclick=()=>{S.pkg={...S.hist.find(h=>h.id==d.dataset.l).p};drawPkg();$('#out').scrollIntoView()});
+ $('#hl').querySelectorAll('[data-d]').forEach(d=>d.onclick=()=>{S.hist=S.hist.filter(h=>h.id!=d.dataset.d);store.set('rcsp_hist_v3',JSON.stringify(S.hist));drawHist()})}
+$('#hb').onclick=()=>{$('#hbox').hidden=!$('#hbox').hidden;drawHist();if(!$('#hbox').hidden)$('#hbox').scrollIntoView()};
+
+$('#go').onclick=async()=>{const idea=$('#idea').value.trim(),err=$('#err');err.textContent='';
+ if(!idea){err.textContent='ใส่ไอเดียหรือเนื้อร้องก่อนนะ';return}
+ const m=MODES.find(x=>x[0]===S.mode),v=VOC.find(x=>x[0]===$('#vocal').value);
+ const body={mode:S.mode,idea,genres:S.sel,vocal:S.mode==='instrumental'?'none':$('#vocal').value,lang:$('#lang').value,dur:$('#dur').value};
+ $('#go').disabled=true;$('#go').textContent='กำลังจัดของเข้าร้าน...';
+ try{S.pkg=await callApi('song',body);drawPkg();$('#out').scrollIntoView()}catch(e){err.textContent=e.message}
+ $('#go').textContent='✨ ทำเพลงเลย';syncBtns()};
+
+$('#dnab').onclick=async()=>{const t=$('#ref').value.trim(),err=$('#err'),b=$('#dnab');err.textContent='';
+ if(!t){err.textContent='ใส่ชื่อเพลงอ้างอิงก่อนถอดDNA';return}
+ b.disabled=true;b.textContent='กำลังถอด...';
+ try{const d=await callApi('dna',{ref:t});
+  let room=false;if(d.sonicTags){if(!S.custom.includes(d.sonicTags))S.custom.unshift(d.sonicTags);if(S.sel.length<MAXG&&!S.sel.includes(d.sonicTags)){S.sel.unshift(d.sonicTags);room=true}drawChips()}
+  $('#dnaout').innerHTML=`<p>${esc(d.summary||'ถอดโครงสร้างเรียบร้อย')}</p><p class="cnt">${esc(d.sonicTags||'')}</p><p class="note">${room?'เติมแท็กเสียงลงในแนวเพลงให้แล้ว':'เลือกครบ 3 แนวแล้ว แท็กเสียงอยู่ในรายการแนวเพลง แตะเพื่อสลับใช้'}</p>`}catch(e){err.textContent=e.message}
+ b.textContent='ถอดDNA';syncBtns()};
+
+// ---- PWA: service worker + install ----
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+(function(){
+  const btn=$('#instb'),box=$('#inst'),hint=$('#insth');let ev=null;
+  if(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true){btn.hidden=true;return}
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e});
+  btn.onclick=async()=>{
+    if(ev){ev.prompt();try{await ev.userChoice}catch{}ev=null;return}
+    hint.textContent=ios?'บน iPhone/iPad: กดปุ่มแชร์ใน Safari แล้วเลือก "เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)':'ติดตั้งผ่านเมนูของเบราว์เซอร์ (ไอคอนติดตั้งในแถบที่อยู่ หรือเมนู "ติดตั้งแอป / Add to Home Screen")';
+    box.hidden=!box.hidden};
+  addEventListener('appinstalled',()=>{btn.hidden=true;box.hidden=true});
+})();
+
+drawTabs();drawQuick();drawChips();drawHist();count();
+callApi('quota',{}).then(syncBtns).catch(()=>{});
+</script>
+</body>
+</html>
