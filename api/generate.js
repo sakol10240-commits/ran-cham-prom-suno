@@ -189,8 +189,8 @@ function parseJson(text) {
   return JSON.parse(c.slice(i, j + 1));
 }
 
-async function callGemini(system, user, schema, temperature) {
-  const model = encodeURIComponent((process.env.GEMINI_MODEL || 'gemini-2.5-flash').trim());
+async function callGeminiModel(modelName, system, user, schema, temperature) {
+  const model = encodeURIComponent(modelName);
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
   const payload = JSON.stringify({
     systemInstruction: { parts: [{ text: system }] },
@@ -213,13 +213,41 @@ async function callGemini(system, user, schema, temperature) {
         const txt = (j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts || []).map(p => p.text || '').join('');
         return parseJson(txt);
       }
-      if (r.status === 429 || (r.status >= 400 && r.status < 500)) throw Object.assign(new Error('upstream'), { status: r.status });
+      if (r.status === 429 || (r.status >= 400 && r.status < 500)) {
+        let detail = '';
+        try { const j = await r.json(); detail = String((j && j.error && ((j.error.status || '') + ': ' + (j.error.message || ''))) || '').slice(0, 300); } catch (_) {}
+        throw Object.assign(new Error('upstream'), { status: r.status, detail });
+      }
     } catch (e) {
       if (e.status) throw e;
     } finally { clearTimeout(timer); }
     await new Promise(res => setTimeout(res, 1200 * (a + 1)));
   }
   throw Object.assign(new Error('upstream'), { status: lastStatus || 502 });
+}
+
+// Models are retired from time to time, so try a short fallback list when a model is not found.
+const MODEL_FALLBACKS = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite'];
+let goodModel = ''; // remembered per server instance once a model works
+
+async function callGemini(system, user, schema, temperature) {
+  const envModel = (process.env.GEMINI_MODEL || '').trim();
+  const list = [...new Set([goodModel, envModel, ...MODEL_FALLBACKS].filter(Boolean))];
+  let lastErr;
+  for (const m of list) {
+    try {
+      const out = await callGeminiModel(m, system, user, schema, temperature);
+      goodModel = m;
+      return out;
+    } catch (e) {
+      lastErr = e;
+      const d = String(e.detail || '');
+      const keyProblem = e.status === 403 || /api key|permission|billing|quota|API_KEY/i.test(d);
+      if (e.status === 429 || keyProblem || !(e.status === 404 || e.status === 400)) throw e; // not a model problem: stop
+      console.error('model skipped', m, e.status, d);
+    }
+  }
+  throw lastErr;
 }
 
 function buildSong(b) {
@@ -283,9 +311,9 @@ async function handle({ method, headers, body, ip }) {
     return { status: 200, body: { ok: true, data, quota: resv.quota } };
   } catch (e) {
     await refundQuota(keys);
-    console.error('gemini error', e.status || e.message);
+    console.error('gemini error', e.status || e.message, e.detail || '');
     if (e.status === 429) return fail(429, 'quota', 'ร้านคนแน่นหรือโควตา Gemini เต็ม รอสักครู่แล้วลองใหม่');
-    if (e.status >= 400 && e.status < 500) return fail(502, 'upstream_rejected', 'Gemini ปฏิเสธคำขอ เจ้าของร้านต้องตรวจ key หรือชื่อโมเดลฝั่งเซิร์ฟเวอร์');
+    if (e.status >= 400 && e.status < 500) return fail(502, 'upstream_rejected', 'Gemini ปฏิเสธคำขอ เจ้าของร้านต้องตรวจ key หรือชื่อโมเดลฝั่งเซิร์ฟเวอร์' + (process.env.DEBUG_ERRORS === '1' ? ' [' + e.status + ' ' + (e.detail || '-') + ']' : ''));
     return fail(502, 'upstream', 'Gemini ไม่ตอบสนอง ลองอีกครั้ง');
   }
 }
