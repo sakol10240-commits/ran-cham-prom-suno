@@ -1,40 +1,14 @@
-ร้านชำ Suno ai create prom - เวอร์ชันเซิร์ฟเวอร์กลาง + โควตาต่อผู้ใช้
+ร้านชำ Suno prom (เวอร์ชันไฟล์แบน ใช้โฟลเดอร์เดียวคือ api)
 
-โครงสร้าง
-  index.html, sw.js, manifest.webmanifest, icons/   หน้าเว็บแอป (ติดตั้งได้ มีป้ายโควตา)
-  api/generate.js                                    จุดรับคำขอ (Vercel Function)
-  lib/core.js                                        prompt + ตรวจข้อมูล + โควตา + เรียก Gemini
-  vercel.json, package.json, .env.example
+ไฟล์ในชุดนี้
+  index.html, sw.js, manifest.webmanifest, vercel.json, package.json, ไฟล์ .png 4 ไฟล์  -> วางชั้นนอกสุดของที่เก็บ GitHub
+  api/generate.js                                                                   -> ต้องอยู่ในโฟลเดอร์ api
 
-ขั้นตอนบน Vercel
-  1) ขอ Gemini API key ที่ aistudio.google.com แล้วตั้งวงเงิน/แจ้งเตือนการใช้งานไว้
-  2) อัปโหลดโฟลเดอร์นี้ขึ้น GitHub แล้ว Import ที่ vercel.com/new (หรือรัน npx vercel)
-  3) เพิ่มฐานข้อมูลนับโควตา: Vercel > Storage / Marketplace > Upstash Redis > เชื่อมกับโปรเจกต์
-     ตัวแปรจะถูกเติมให้เอง (UPSTASH_REDIS_REST_URL/TOKEN หรือ KV_REST_API_URL/TOKEN
-     โค้ดอ่านได้ทั้งสองแบบ ให้เปิดดูหน้า Environment Variables ว่ามีตัวใดตัวหนึ่ง)
-  4) Project > Settings > Environment Variables ใส่เพิ่ม
-        GEMINI_API_KEY        = key ของคุณ                 (จำเป็น)
-        GEMINI_MODEL          = gemini-2.5-flash            (ไม่บังคับ)
-        APP_ACCESS_CODE       = รหัสสำหรับคนที่ไว้ใจ         (แนะนำ)
-        DAILY_LIMIT_PER_USER  = 10   ครั้ง/วัน/อุปกรณ์       (ไม่ใส่ = 10, ใส่ 0 = ไม่จำกัด)
-        DAILY_LIMIT_PER_IP    = 30   ครั้ง/วัน/เครือข่าย     (ไม่ใส่ = 30)
-        DAILY_LIMIT_GLOBAL    = 300  ครั้ง/วัน ทั้งร้าน       (ไม่ใส่ = 300) เพดานกันค่าใช้จ่ายบาน
-  5) Redeploy แล้วเปิดลิงก์ ป้าย "เหลือ X/10 ครั้งวันนี้" จะขึ้นที่หัวหน้า
+Environment Variables ที่ต้องตั้งใน Vercel (Settings > Environment Variables)
+  GEMINI_API_KEY   = กุญแจจาก aistudio.google.com   (จำเป็น)
+  APP_ACCESS_CODE  = รหัสที่ตั้งเอง                   (แนะนำ)
+เปลี่ยนค่าแล้วต้อง Redeploy ทุกครั้ง
 
-วิธีนับโควตา
-  - นับ 1 ครั้งต่อการสร้างเพลงหรือถอดDNA 1 ครั้ง นับตามวันเวลาไทย รีเซ็ตเที่ยงคืน
-  - จองโควตาก่อนเรียก Gemini ถ้า Gemini ล้มเหลว จะคืนโควตาให้
-  - ตรวจ 3 ชั้น: อุปกรณ์ (รหัสสุ่มที่เก็บในเบราว์เซอร์) / IP / ทั้งร้าน
-  - ถ้าระบบนับโควตาขัดข้อง จะไม่เรียก Gemini (ปิดไว้ก่อนเพื่อกันค่าใช้จ่าย)
-  - ไม่มีรหัสอุปกรณ์หรือรหัสไม่ถูกต้อง จะถูกรวมในถังกลางเดียวกัน จึงเลี่ยงด้วยการไม่ส่งไม่ได้
-
-ข้อจำกัดที่ต้องรู้
-  - "ต่อผู้ใช้" คือต่ออุปกรณ์/เบราว์เซอร์ ผู้ใช้ล้างข้อมูลเบราว์เซอร์แล้วได้รหัสใหม่
-    ด่านกันคือเพดานต่อ IP และเพดานทั้งร้าน ถ้าต้องการนับตามตัวบุคคลจริง ต้องเพิ่มระบบล็อกอิน
-  - ถ้าไม่ได้เชื่อม Upstash โค้ดจะนับในหน่วยความจำของแต่ละอินสแตนซ์ ซึ่งไม่แม่นและรีเซ็ตเมื่อเซิร์ฟเวอร์รีสตาร์ต
-    ใช้ได้เฉพาะทดสอบ อย่าใช้เปิดสาธารณะ
-  - อย่าใส่ key ในโค้ดหรือ commit ขึ้น GitHub
-  - แผน Hobby ของ Vercel จำกัดใช้ส่วนบุคคลที่ไม่ใช่เชิงพาณิชย์
-  - GitHub Pages ใช้กับเวอร์ชันนี้ไม่ได้
-
-ทดสอบในเครื่อง: สร้าง .env.local จาก .env.example แล้วรัน npx vercel dev
+โควตาต่อวัน (ไม่บังคับ): DAILY_LIMIT_PER_USER (10), DAILY_LIMIT_PER_IP (30), DAILY_LIMIT_GLOBAL (300)
+ใส่ 0 = ไม่จำกัด  ถ้าไม่เชื่อม Upstash Redis ตัวนับจะไม่แม่น ใช้ทดลองกับคนใกล้ตัวเท่านั้น
+อย่าใส่กุญแจในไฟล์หรือ commit ขึ้น GitHub
