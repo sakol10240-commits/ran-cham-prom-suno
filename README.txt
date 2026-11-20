@@ -1,14 +1,24 @@
-ร้านชำ Suno prom (เวอร์ชันไฟล์แบน ใช้โฟลเดอร์เดียวคือ api)
+DNA SONG AI (Gemini engine) - แทนที่ ran-cham-prom-suno
 
 ไฟล์ในชุดนี้
-  index.html, sw.js, manifest.webmanifest, vercel.json, package.json, ไฟล์ .png 4 ไฟล์  -> วางชั้นนอกสุดของที่เก็บ GitHub
-  api/generate.js                                                                   -> ต้องอยู่ในโฟลเดอร์ api
+  index.html, sw.js, manifest.webmanifest, vercel.json, package.json และไฟล์ .png 4 ไฟล์ -> วางชั้นนอกสุดของที่เก็บ GitHub
+  api/generate.js -> ต้องอยู่ในโฟลเดอร์ api (เหมือนเดิม)
 
-Environment Variables ที่ต้องตั้งใน Vercel (Settings > Environment Variables)
+วิธีแทนของเดิม (ใช้ที่เก็บและโปรเจกต์ Vercel เดิม ลิงก์และ Environment Variables เดิมยังใช้ต่อได้)
+  1. เปิดที่เก็บ ran-cham-prom-suno บน GitHub > Add file > Upload files
+  2. ลากไฟล์ทั้งหมดในชุดนี้ลงไป โดยไฟล์ชื่อซ้ำจะถูกแทนที่ (api/generate.js ให้ใช้ Add file > Create new file พิมพ์ชื่อ api/generate.js แล้ววางโค้ด หรือลากทั้งโฟลเดอร์ api)
+  3. Commit changes แล้วรอ Vercel Deploy ใหม่อัตโนมัติ 1-2 นาที
+
+Environment Variables ใน Vercel (Settings > Environment Variables) ใช้ชุดเดิมได้เลย
   GEMINI_API_KEY   = กุญแจจาก aistudio.google.com   (จำเป็น)
-  APP_ACCESS_CODE  = รหัสที่ตั้งเอง                   (แนะนำ)
+  APP_ACCESS_CODE  = รหัสที่ตั้งเอง                   (แนะนำ ผู้ใช้ต้องใส่ในช่อง "รหัสเข้าร้าน")
+  GEMINI_MODEL     = ชื่อโมเดล                        (ไม่บังคับ ถ้าไม่ตั้งจะลองรายการสำรองในโค้ด)
 เปลี่ยนค่าแล้วต้อง Redeploy ทุกครั้ง
 
 โควตาต่อวัน (ไม่บังคับ): DAILY_LIMIT_PER_USER (10), DAILY_LIMIT_PER_IP (30), DAILY_LIMIT_GLOBAL (300)
 ใส่ 0 = ไม่จำกัด  ถ้าไม่เชื่อม Upstash Redis ตัวนับจะไม่แม่น ใช้ทดลองกับคนใกล้ตัวเท่านั้น
-อย่าใส่กุญแจในไฟล์หรือ commit ขึ้น GitHub
+
+สิ่งที่เปลี่ยนจากเวอร์ชันเดิม
+  - หน้าเว็บเป็น DNA SONG AI เต็ม: โหมดใช้พรอมต์จาก DNA, วิเคราะห์ BPM จากไฟล์เสียง, ช่องรายละเอียดเพิ่ม, สลับไทย/EN
+  - พรอมต์ระบบและ schema อยู่ฝั่งเซิร์ฟเวอร์เท่านั้น เบราว์เซอร์ส่งแค่ข้อความผู้ใช้
+  - อย่าใส่กุญแจในไฟล์หรือ commit ขึ้น GitHub

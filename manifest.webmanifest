@@ -1,14 +1,14 @@
 {
-  "name": "ร้านชำ Suno prom",
-  "short_name": "Suno prom",
-  "description": "สร้างเนื้อร้อง สไตล์ และโครงสร้างเพลงสำหรับ Suno AI",
+  "name": "DNA SONG AI",
+  "short_name": "DNA SONG AI",
+  "description": "ถอด DNA เพลง แต่งเนื้อ และสร้างสไตล์สำหรับ Suno AI ด้วย Gemini",
   "lang": "th",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#070d1a",
-  "theme_color": "#070d1a",
+  "background_color": "#16111f",
+  "theme_color": "#6d4fc2",
   "icons": [
     {
       "src": "icon-192.png",
