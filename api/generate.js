@@ -188,6 +188,12 @@ async function callGeminiModel(modelName, system, user, schema, temperature) {
       if (r.status === 429 || (r.status >= 400 && r.status < 500)) {
         let detail = '';
         try { const j = await r.json(); detail = String((j && j.error && ((j.error.status || '') + ': ' + (j.error.message || ''))) || '').slice(0, 300); } catch (_) {}
+        if (r.status === 429 && a === 0) {
+          // A per-minute limit usually clears in a few seconds: wait once, then retry the same model.
+          const m = /retry in ([\d.]+)\s*s/i.exec(detail), hdr = parseFloat(r.headers.get('retry-after') || '');
+          const wait = Number.isFinite(hdr) ? hdr : (m ? parseFloat(m[1]) : NaN);
+          if (Number.isFinite(wait) && wait <= 8) { await new Promise(res => setTimeout(res, Math.ceil(wait * 1000) + 300)); continue; }
+        }
         throw Object.assign(new Error('upstream'), { status: r.status, detail });
       }
     } catch (e) {
@@ -205,7 +211,7 @@ let goodModel = ''; // remembered per server instance once a model works
 async function callGemini(system, user, schema, temperature) {
   const envModel = (process.env.GEMINI_MODEL || '').trim();
   const list = [...new Set([goodModel, envModel, ...MODEL_FALLBACKS].filter(Boolean))];
-  let lastErr;
+  let lastErr, quotaErr;
   for (const m of list) {
     try {
       const out = await callGeminiModel(m, system, user, schema, temperature);
@@ -214,12 +220,14 @@ async function callGemini(system, user, schema, temperature) {
     } catch (e) {
       lastErr = e;
       const d = String(e.detail || '');
-      const keyProblem = e.status === 403 || /api key|permission|billing|quota|API_KEY/i.test(d);
-      if (e.status === 429 || keyProblem || !(e.status === 404 || e.status === 400)) throw e; // not a model problem: stop
-      console.error('model skipped', m, e.status, d);
+      const isQuota = e.status === 429;
+      if (isQuota) quotaErr = quotaErr || e;
+      const hardKey = e.status === 403 || (!isQuota && /api key|permission|billing|API_KEY/i.test(d));
+      if (hardKey || !(isQuota || e.status === 404 || e.status === 400)) throw e; // key or server problem: stop
+      console.error('model skipped', m, e.status, d); // 429 / 404 / 400: try the next model (each has its own quota)
     }
   }
-  throw lastErr;
+  throw quotaErr || lastErr;
 }
 
 // The browser prepares the user message (idea, genres, vocal, language, DNA blueprint, extras).
@@ -280,7 +288,7 @@ async function handle({ method, headers, body, ip }) {
   } catch (e) {
     await refundQuota(keys);
     console.error('gemini error', e.status || e.message, e.detail || '');
-    if (e.status === 429) return fail(429, 'quota', 'ร้านคนแน่นหรือโควตา Gemini เต็ม รอสักครู่แล้วลองใหม่');
+    if (e.status === 429) return fail(429, 'quota', 'ร้านคนแน่นหรือโควตา Gemini เต็ม รอสักครู่แล้วลองใหม่' + (process.env.DEBUG_ERRORS === '1' ? ' [429 ' + (e.detail || '-') + ']' : ''));
     if (e.status >= 400 && e.status < 500) return fail(502, 'upstream_rejected', 'Gemini ปฏิเสธคำขอ เจ้าของร้านต้องตรวจ key หรือชื่อโมเดลฝั่งเซิร์ฟเวอร์' + (process.env.DEBUG_ERRORS === '1' ? ' [' + e.status + ' ' + (e.detail || '-') + ']' : ''));
     return fail(502, 'upstream', 'Gemini ไม่ตอบสนอง ลองอีกครั้ง');
   }
