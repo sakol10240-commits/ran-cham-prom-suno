@@ -1,5 +1,6 @@
 // DNA SONG AI - song package library (Supabase). Server side only.
-// Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (never put these in the browser), APP_ACCESS_CODE (same code as generate.js),
+// Env: SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL), SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_SECRET_KEY) - the Vercel Supabase
+//      integration adds these for you; never put them in the browser. APP_ACCESS_CODE (same code as generate.js),
 //      optional LIBRARY_SALT, DEBUG_ERRORS=1.
 // Talks to Supabase through its REST interface with fetch, so there is nothing to npm install.
 'use strict';
@@ -17,7 +18,10 @@ const fail = (status, code, message, extra) => ({ status, body: Object.assign({ 
 const done = (data) => ({ status: 200, body: Object.assign({ ok: true }, data) });
 
 function sbConf() {
-  return { url: String(process.env.SUPABASE_URL || '').replace(/\/+$/, ''), key: process.env.SUPABASE_SERVICE_ROLE_KEY || '' };
+  return {
+    url: String(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/+$/, ''),
+    key: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || '',
+  };
 }
 
 async function sb(path, opt) {
@@ -25,7 +29,8 @@ async function sb(path, opt) {
   opt = opt || {};
   const r = await fetch(url + '/rest/v1/' + path, {
     method: opt.method || 'GET',
-    headers: Object.assign({ apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }, opt.headers || {}),
+    // legacy service_role keys are JWTs (eyJ...) and go in both headers; new sb_secret_ keys are not JWTs and go in apikey only
+    headers: Object.assign({ apikey: key, 'Content-Type': 'application/json' }, key.startsWith('eyJ') ? { Authorization: 'Bearer ' + key } : {}, opt.headers || {}),
     body: opt.body ? JSON.stringify(opt.body) : undefined,
   });
   const text = await r.text();
@@ -67,7 +72,8 @@ async function act(req, p) {
     const limit = Math.min(PAGE_MAX, Math.max(1, parseInt(p.limit, 10) || 12));
     const offset = Math.min(1000, Math.max(0, parseInt(p.offset, 10) || 0));
     const q = cleanQuery(p.q);
-    let path = 'public_song_packages?select=' + COLS.replace(',is_public', '') +
+    // public reads go through the server too: the table stays locked (RLS, no public policy) and there is no view to expose
+    let path = 'song_packages?select=' + COLS.replace(',is_public', '') + '&is_public=eq.true&is_hidden=eq.false' +
       '&order=updated_at.desc&limit=' + (limit + 1) + '&offset=' + offset;
     if (q) { const t = encodeURIComponent('*' + q + '*'); path += '&or=(title.ilike.' + t + ',style_prompt.ilike.' + t + ')'; }
     const rows = (await sb(path)) || [];
