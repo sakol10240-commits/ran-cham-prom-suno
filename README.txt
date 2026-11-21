@@ -31,3 +31,5 @@ Environment Variables ใน Vercel (Settings > Environment Variables) ใช้
   - ดูโควตาจริง: aistudio.google.com > Usage / Rate limits ของโปรเจกต์ที่ออก key
   - โค้ดเวอร์ชันนี้รอแล้วลองใหม่ 1 ครั้งถ้า Gemini บอกให้รอสั้นๆ และข้ามไปลองโมเดลถัดไปเมื่อโมเดลหนึ่งเต็ม
   - ถ้าเต็มทุกโมเดล: รอรีเซ็ต (โควตารายวันรีเซ็ตตามเวลาแปซิฟิก) ตั้ง GEMINI_MODEL เป็นโมเดลที่มีโควตาเหลือ หรือเปิดการเรียกเก็บเงินใน Google AI Studio
+
+คลังแพ็กเกจสาธารณะ (Supabase): ดูขั้นตอนในไฟล์ SETUP-SUPABASE.txt และเหตุผลการแก้โค้ดใน REVIEW.md
